@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple TypeScript App</title>
+
+    <style>
+        body, html {
+            margin:0;
+            padding:0;
+        }
+
+        #viewport {
+            position: relative;
+            width:400px;
+            height:400px;
+            background: blue;
+            /* border: 2px solid greenyellow; */
+        }
+        
+        .triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 0 solid transparent;
+            border-right: 0 solid transparent;
+            border-bottom: 0 solid #e6e6e6;
+        }
+    </style>
+</head>
+<body>
+    <div id="viewport"></div>
+    <script src="dist/bundle.js"></script>
+
+</body>
+</html>
