@@ -1,10 +1,7 @@
-
-import { Triangle, Vector2D, Vector3D } from './model';
-import { Viewport, Camera } from './camera';
-import { render } from './renderer';
-// function magnitude(v1: Vector2D, v2: Vector2D): number {
-//     return math.
-// }
+import {Camera, Viewport} from './camera';
+import {render} from './renderer';
+import {Vector3D} from "./maths/vectors";
+import {Triangle} from "./maths/triangles";
 
 const triangles: Triangle<Vector3D>[] = [
     [

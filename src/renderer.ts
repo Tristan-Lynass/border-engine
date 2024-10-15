@@ -1,7 +1,7 @@
-
 import * as math from 'mathjs';
-import { Triangle, Vector2D, Vector3D } from './model';
-import { Camera } from './camera';
+import {Camera} from './camera';
+import {Triangle} from "./maths/triangles";
+import {Vector2D} from "./maths/vectors";
 
 const viewport = document.getElementById('viewport')!;
 const { width, height } = viewport?.getBoundingClientRect();
@@ -24,7 +24,6 @@ export function render(camera: Camera, triangles: Triangle<Vector2D>[]): void {
         e.setAttribute('style', css(math.multiply(top, 10) as Vector2D, b, c, angle, camera))
         viewport.appendChild(e);
 
-
         console.log(`(${top[0]}, ${top[1]}), (${b[0]}, ${b[1]}), (${c[0]}, ${c[1]})`);
     }
 }
@@ -34,7 +33,7 @@ function css(top: Vector2D, b: Vector2D, c: Vector2D, angle: number, camera: Cam
     const scaleScreenWidth = (x: number) => (width * (x / vw));
     const scaleScreenHeight = (x: number) => (height * (x / vh));
 
-    const leftOffset = -scaleScreenWidth(top[0]) // fixme: remove -negative hack
+    const leftOffset = scaleScreenWidth(top[0]);
     const bottomOffset = scaleScreenHeight(top[1])
 
     const rotationMatrix = rotate(angle);

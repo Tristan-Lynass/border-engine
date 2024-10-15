@@ -1,5 +1,5 @@
 import * as math from 'mathjs';
-import { Triangle, Vector2D, Vector3D } from './model';
+import {line, Vector2D, Vector3D} from "./maths/vectors";
 
 export interface Viewport {
     readonly bottomL: Vector3D;
@@ -7,7 +7,6 @@ export interface Viewport {
     readonly bottomR: Vector3D;
     readonly topR: Vector3D;
 }
-
 
 export class Camera {
     readonly n: Vector3D;
@@ -34,7 +33,7 @@ export class Camera {
         const u = math.divide(math.dot(intersection, this.uAxis), math.dot(this.uAxis, this.uAxis));
         //  v (our new y-coord; v = (P . Y)/(Y . Y)
         const v = math.divide(math.dot(intersection, this.vAxis), math.dot(this.vAxis, this.vAxis));
-        return [math.round(u, 4), math.round(v, 4)];
+        return [math.round(u, 4), math.round(v, 4)]; // TODO: Remove rounding
     }
 
     private intersection(point: Vector3D): Vector3D {
@@ -50,10 +49,7 @@ export class Camera {
         const t = math.divide(math.unaryMinus(dot1), dot2);
 
 
-        return this.line(point, t);
+        return line(this.location, point, t);
     }
 
-    private line(point: Vector3D, t: number): Vector3D {
-        return math.add(this.location, math.multiply(t, math.subtract(point, this.location))) as Vector3D;
-    }
 }
