@@ -51,5 +51,4 @@ export class Camera {
 
         return line(this.location, point, t);
     }
-
 }
