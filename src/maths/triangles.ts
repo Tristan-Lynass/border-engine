@@ -1,5 +1,4 @@
-import {lineInfo, Vector2D} from "./vectors";
-import * as math from "mathjs";
+import {lineInfo, magnitude, Vector2D, x, y} from "./vectors";
 
 export type Triangle<T> = readonly [T, T, T];
 
@@ -27,13 +26,13 @@ export function normaliseB(triangle: Triangle<Vector2D>): NormalisedTriangle {
 
     const {gradient, angle} = lineInfo(b, c);
     if (gradient === 0) { // horizontal line
-        const isTipTop = tip[1] > b[1]
+        const isTipTop = y(tip) > y(b)
         return isTipTop ? {triangle: [tip, b, c], angle} : {triangle: [tip, c, b], angle: angle + 180}
     }
 
     if (gradient === Number.POSITIVE_INFINITY) { // vertical line
-        const isTipLeft = tip[0] < b[0];
-        const [highY, lowY] = b[1] > c[1] ? [b, c] : [c, b]// vertically sort the base points
+        const isTipLeft = x(tip) < x(b);
+        const [highY, lowY] = y(b) > y(c) ? [b, c] : [c, b]// vertically sort the base points
         return isTipLeft ? {triangle: [tip, lowY, highY], angle} : {triangle: [tip, highY, lowY], angle: angle + 180}
     }
 
@@ -43,8 +42,8 @@ export function normaliseB(triangle: Triangle<Vector2D>): NormalisedTriangle {
     // y = gradient * x + (gradient * x1 - y1)
     //
     // y being the vertical point of intersection with the line
-    const y = gradient * tip[0] + (b[1] - gradient * b[0]);
-    const aboveLine = tip[1] > y;
+    const yIntersect = gradient * x(tip) + (y(b) - gradient * x(b));
+    const aboveLine = y(tip) > yIntersect;
 
     if (gradient > 0) { // positive gradient
         return aboveLine ? {triangle: [tip, b, c], angle: angle} : {triangle: [tip, c, b], angle: angle + 180}
@@ -54,48 +53,8 @@ export function normaliseB(triangle: Triangle<Vector2D>): NormalisedTriangle {
     return aboveLine ? {triangle: [tip, b, c], angle: angle + 180} : {triangle: [tip, c, b], angle: angle}
 
     // FIXME test against this and delete
-    // const isTipTopRight = tip[0] > b[0] && tip[1] > c[1];
+    // const isTipTopRight = x(tip) > x(b) && y(tip) > y(c);
     // return isTipTopRight ? {triangle: [tip, b, c], angle: angle + 180} : {triangle: [tip, c, b], angle: angle}
-}
-
-export function normaliseA(triangle: Triangle<Vector2D>): NormalisedTriangle {
-    triangle = normaliseLongestSide(triangle);
-    const [top, b, c] = triangle;
-    let angle = normalisationAngle(triangle);
-    const rotationMatrix = rotate(angle);
-
-    const topR = math.multiply(rotationMatrix, top);
-    const bR = math.multiply(rotationMatrix, math.subtract(b, top));
-
-    let left: Vector2D;
-    let right: Vector2D;
-
-    // b.x < top.x then; b must be on the left
-    if (bR[0] < topR[0]) {
-        left = b;
-        right = c;
-    } else {
-        left = c;
-        right = b;
-    }
-
-    if (bR[1] > topR[1]) {
-        // the triangle point is upside down, so flip the angle and the left & rights.
-        angle += 180;
-        [left, right] = [right, left];
-    }
-
-    return {triangle: [top, left, right], angle};
-}
-
-
-function normalisationAngle(triangle: Triangle<Vector2D>): number {
-    const [_a, b, c] = triangle;
-    const rise = c[1] - b[1];
-    const run = c[0] - b[0];
-    const angle = math.atan(rise / run) * 180 / Math.PI;
-    console.log(`Angle = ${angle}`);
-    return angle;
 }
 
 /**
@@ -122,19 +81,8 @@ function normaliseLongestSide(triangle: Triangle<Vector2D>): Triangle<Vector2D> 
 
 function normaliseBase(triangle: Triangle<Vector2D>): Triangle<Vector2D> {
     let [a, b, c] = triangle;
-    if (b[0] > c[0]) { // ensure b is before c along the x-axis for consistent gradient
+    if (x(b) > x(c)) { // ensure b is before c along the x-axis for consistent gradient
         [b, c] = [c, b];
     }
     return [a, b, c];
-}
-
-function magnitude(v1: Vector2D, v2: Vector2D): number {
-    return math.norm(math.subtract(v2, v1)) as number; // TODO: address blind cast
-}
-
-function rotate(theta: number): [[number, number], [number, number]] {
-    return [
-        [Math.cos(theta), -Math.sin(theta)],
-        [Math.sin(theta), Math.cos(theta)]
-    ];
 }

@@ -7,18 +7,28 @@
 
     <style>
         body, html {
-            margin:0;
-            padding:0;
+            margin: 0;
+            padding: 0;
         }
 
-        #viewport {
+        .viewport {
             position: relative;
-            width:400px;
-            height:400px;
+            width: 400px;
+            height: 400px;
             background: blue;
             /* border: 2px solid greenyellow; */
+            overflow: hidden;
+            z-index: -1000;
         }
-        
+
+        .click-captor {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 400px;
+            height: 400px;
+        }
+
         .triangle {
             position: absolute;
             width: 0;
@@ -30,8 +40,45 @@
     </style>
 </head>
 <body>
-    <div id="viewport"></div>
-    <script src="dist/bundle.js"></script>
+
+<div style="display: flex;">
+    <div style="display: flex;">
+        <div>X</div>
+        <button id="cameraXDown"><</button>
+        <span id="cameraX"></span>
+        <button id="cameraXUp"><</button>
+    </div>
+    <div style="display: flex;">
+        <div>Y</div>
+        <button id="cameraYDown"><</button>
+        <span id="cameraY"></span>
+        <button id="cameraYUp"><</button>
+    </div>
+    <div style="display: flex;">
+        <div>X</div>
+        <button id="cameraZDown"><</button>
+        <span id="cameraZ"></span>
+        <button id="cameraZUp"><</button>
+    </div>
+</div>
+
+<div style="display: flex;">
+    <div style="display: flex;">
+        <div>FOV</div>
+        <button id="fovDown"><</button>
+        <span id="fov"></span>
+        <button id="fovUp"><</button>
+    </div>
+    <div style="display: flex;">
+        <div>Distance</div>
+        <button id="distanceDown"><</button>
+        <span id="distance"></span>
+        <button id="distanceUp"><</button>
+    </div>
+</div>
+
+
+<script src="dist/bundle.js"></script>
 
 </body>
 </html>
