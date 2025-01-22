@@ -1,6 +1,7 @@
-import {Vector3D, x, y, z} from "./maths/vectors";
+import {rotation, Vector3D, x, y, z} from "./maths/vectors";
 import {Triangle} from "./maths/triangles";
 import {DomEngine} from "./engine/engine";
+import {dragToLook} from "./ui/drag-to-look-handler";
 
 // (1,1,2.1),(1,.5,2),(1,1,.5)
 const triangles: Triangle<Vector3D>[] = [
@@ -15,8 +16,18 @@ const engine = new DomEngine(document.body);
 engine.triangles = triangles;
 engine.render();
 
-const [a, b, c] = triangles[0];
+// const [a, b, c] = triangles[0];
 
+dragToLook(document.querySelector('.viewport')!, {
+    onMove: (pitch, yaw) => {
+        console.log(`pitch=${pitch}, yaw=${yaw}`);
+        engine.camera.location = {
+            ...engine.camera.location,
+            rotation: rotation({pitch, yaw})
+        };
+        engine.render();
+    }
+});
 
 document.querySelectorAll('button').forEach(button => {
     button.addEventListener('click', handleButtonClick);

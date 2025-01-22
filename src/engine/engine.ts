@@ -1,6 +1,6 @@
 import {Camera} from "./camera";
 import {normaliseB, Triangle} from "../maths/triangles";
-import {Vector2D, Vector3D, x, y} from "../maths/vectors";
+import {rotation, Vector2D, Vector3D, x, y} from "../maths/vectors";
 
 export class DomEngine {
 
@@ -8,7 +8,7 @@ export class DomEngine {
 
     readonly camera = new Camera({
         position: [-10, 0, 0],
-        normal: [0, 0, 1],
+        rotation: rotation({pitch: Math.PI / 2}),
         fov: 120,
         viewportDepth: 5,
         aspectRatio: 1
@@ -21,6 +21,7 @@ export class DomEngine {
         this.viewport.setAttribute('class', 'viewport')
         anchor.appendChild(this.viewport);
 
+        // FIXME: This just creates a single triangle that we can manipulate. Ultimately this should be based on the scene
         const e = document.createElement('div');
         e.setAttribute('class', 'triangle');
         this.viewport.appendChild(e);

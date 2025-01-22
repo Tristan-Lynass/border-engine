@@ -1,5 +1,5 @@
 import * as math from 'mathjs';
-import {line, RotationMatrix3D, Vector2D, Vector3D, x, y} from "../maths/vectors";
+import {line, SquareMatrix3D, Vector2D, Vector3D, x, y} from "../maths/vectors";
 import {degToRad} from "../maths/trigonometry";
 
 export interface Viewport {
@@ -7,6 +7,8 @@ export interface Viewport {
     readonly topL: Vector3D;
     readonly bottomR: Vector3D;
     readonly topR: Vector3D;
+
+    readonly normal: Vector3D;
 
     readonly u: Axis;
     readonly v: Axis;
@@ -19,8 +21,7 @@ export interface Axis {
 
 export interface CameraSnapshot {
     readonly position: Vector3D;
-    readonly normal: Vector3D; // FIXME: Not used, should be used to point
-    readonly rotation?: RotationMatrix3D;
+    readonly rotation?: SquareMatrix3D;
     readonly fov: number;
     readonly viewportDepth: number;
     readonly aspectRatio: number;
@@ -61,25 +62,24 @@ export class Camera {
         const topR = this.viewportCoordinate([1, 1], viewportMatrix);
         const bottomL = this.viewportCoordinate([-1, -1], viewportMatrix);
         const bottomR = this.viewportCoordinate([1, -1], viewportMatrix);
+        const u = {direction: math.subtract(bottomR, bottomL), length: width};
+        const v = {direction: math.subtract(topL, bottomL), length: height};
 
-        const x = {
+        return {
             topL,
             topR,
             bottomL,
             bottomR,
-            u: {direction: math.subtract(bottomR, bottomL), length: width},
-            v: {direction: math.subtract(topL, bottomL), length: height}
+            normal: math.cross(u.direction, v.direction) as Vector3D,
+            u,
+            v
         };
-
-        console.log(x);
-        return x;
     }
 
     /**
      * v(cam) = cameraCoordinate * viewportMatrix   // The point vector in camera space
      * v(world) =rotation * v(cam) + position       // The point vector in world space
      *
-     * FIXME: Factor in normal vector when calculating here
      * @param cameraCoordinate
      * @param viewportMatrix
      */
@@ -119,10 +119,10 @@ export class Camera {
         // t = -n . (camera - topL) / n . (point - camera)
 
         // Step 1: Calculate n ⋅ (camera - topL)
-        const dot1 = math.dot(this.location.normal, math.subtract(this.location.position, this.viewport.topL));
+        const dot1 = math.dot(this.viewport.normal, math.subtract(this.location.position, this.viewport.topL));
 
         // Step 2: Calculate n ⋅ (point - camera)
-        const dot2 = math.dot(this.location.normal, math.subtract(point, this.location.position));
+        const dot2 = math.dot(this.viewport.normal, math.subtract(point, this.location.position));
 
         // Step 3: Calculate t
         const t = math.divide(math.unaryMinus(dot1), dot2);
